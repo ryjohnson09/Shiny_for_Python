@@ -1,0 +1,4 @@
+- source: Shiny4Python.qmd
+  connect:
+    - id: 9b6adeac-4e62-454b-85b3-bfab8110d6a2
+      url: 'https://colorado.posit.co/rsc/content/9b6adeac-4e62-454b-85b3-bfab8110d6a2/'

@@ -1,0 +1,691 @@
+---
+format: 
+    revealjs:
+        chalkboard: true
+execute: 
+  echo: true
+  eval: false
+---
+
+<center><h1>Shiny for Python</h1></center>
+<center>Ryan Johnson</center>
+
+<br>
+
+![](images/shiny.png){.absolute top=200 left=80 width="400"}
+
+![](images/Python_logo.png){.absolute top=170 right=50 width="500"}
+
+## What is Shiny
+
+[Shiny]{style="color:#447099"} makes it easy to **build web applications**. It enables you to customize the layout and style of your application and dynamically respond to events, such as a button press, or dropdown selection.
+
+![](images/shiny.png){fig-align="center"}
+
+## What is Shiny for Python?
+What the last slide said...
+
+. . .
+
+::: {style="text-align: center"}
+...but for [Python!]{style="color:#EE6331"} 🐍
+:::
+
+![](images/shiny4python_website.png){fig-align="center"}
+
+## Let's create a Shiny for Python app!
+
+::: {.incremental}
+* No need to install anything!
+* Run Shiny for Python in your browser using [Shinylive](https://shiny.rstudio.com/py/docs/shinylive.html)
+* Start here: [a blank python session](https://shinylive.io/py/editor/#code=NobwRAdghgtgpmAXGKAHVA6VBPMAaMAYwHsIAXOcpMMAXwF0g)
+:::
+
+
+## Step 1 - Import Shiny
+
+```{python}
+from shiny import *
+```
+
+## Step 2 - Add UI, Server, App
+
+::: {.incremental}
+* Shiny applications consist of two parts: the **user interface (or UI)**, and the **server function**. These are combined using a **shiny.App object**.
+:::
+
+. . . 
+
+```{python}
+#| code-line-numbers: "3-11"
+
+from shiny import *
+
+# UI ------
+app_ui = ui.page_fluid()
+
+# Server ------
+def server (input, output, session):
+    ...
+
+# Run app ----
+app = App(app_ui, server)
+```
+
+
+## Step 3 - Add Slider
+
+```{python}
+#| code-line-numbers: "5"
+
+from shiny import *
+
+# UI ------
+app_ui = ui.page_fluid(
+    ui.input_slider("n", "N", 0, 100, 40)
+)
+
+# Server ------
+def server (input, output, session):
+    ...
+
+# Run app ----
+app = App(app_ui, server)
+```
+
+## Step 4 - Add Server Logic
+
+$$
+n * 2
+$$
+
+```{python}
+#| code-line-numbers: "10-13"
+
+from shiny import *
+
+# UI ------
+app_ui = ui.page_fluid(
+    ui.input_slider("n", "N", 0, 100, 40)
+)
+
+# Server ------
+def server (input, output, session):
+    @output
+    @render.text
+    def txt():
+        return f"n*2 is {input.n() * 2}"
+
+# Run app ----
+app = App(app_ui, server)
+```
+
+## Step 5 - Add Text Output
+
+```{python}
+#| code-line-numbers: "6"
+
+from shiny import *
+
+# UI ------
+app_ui = ui.page_fluid(
+    ui.input_slider("n", "N", 0, 100, 40),
+    ui.output_text_verbatim("txt")
+)
+
+# Server ------
+def server (input, output, session):
+    @output
+    @render.text
+    def txt():
+        return f"n*2 is {input.n() * 2}"
+
+# Run app ----
+app = App(app_ui, server)
+```
+
+
+## User Interface (UI) - Inputs
+
+All **input UI objects** take the same first two string arguments:
+
+::: {.incremental}
+* `id`: an identifier used to refer to input’s value in the server code. For example, `id="x1"` corresponds with `input.x1()` in the server function.
+* `label`: a description for the input that will appear next to it.
+* Check out all the UI inputs [here](https://shiny.rstudio.com/py/api/#ui-inputs)
+* The next slides will show the most common UI objects
+:::
+
+## UI - Checkbox Inputs
+
+```{python}
+#| code-line-numbers: "4"
+from shiny import ui, App
+
+app_ui = ui.page_fluid(
+    ui.input_checkbox("x1", "Checkbox")
+)
+
+app = App(app_ui, None)
+```
+
+## UI - Numeric Inputs
+
+```{python}
+#| code-line-numbers: "4-5"
+from shiny import ui, App
+
+app_ui = ui.page_fluid(
+    ui.input_numeric("x1", "Number", value=10),
+    ui.input_slider("x2", "Slider", value=10, min=0, max=20),
+)
+
+app = App(app_ui, None)
+```
+
+## UI - Text Inputs
+
+```{python}
+#| code-line-numbers: "4-6"
+from shiny import ui, App
+
+app_ui = ui.page_fluid(
+    ui.input_text("x1", "Text", placeholder="Enter text"),
+    ui.input_text_area("x2", "Text area", placeholder="Enter text"),
+    ui.input_password ("x3", "Password", placeholder="Enter password"),
+)
+
+app = App(app_ui, None)
+```
+
+## UI - Selection Inputs
+
+```{python}
+#| code-line-numbers: "6-8"
+from shiny import ui, App
+
+choices = {"a": "Choice A", "b": "Choice B"}
+
+app_ui = ui.page_fluid(
+    ui.input_select("x1", "Select", choices),
+    ui.input_checkbox_group("x2", "Checkbox group", choices),
+    ui.input_radio_buttons("x3", "Radio buttons", choices),
+)
+
+app = App(app_ui, None)
+```
+
+## UI - Date Inputs
+
+```{python}
+#| code-line-numbers: "6-7"
+from shiny import ui, App
+
+choices = {"a": "Choice A", "b": "Choice B"}
+
+app_ui = ui.page_fluid(
+    ui.input_date("x9", "Date input"),
+    ui.input_date_range("x10", "Date range input"),
+)
+
+app = App(app_ui, None)
+```
+
+## UI - Inputs
+[Click here](https://shinylive.io/py/editor/#code=NobwRAdghgtgpmAXGKAHVA6VBPMAaMAYwHsIAXOcpMAMwCdiYACAZwAsBLCbJjmVYnTJMArhzxMAgugA6EOYTbEOhOCyYBeJiBkpdiJroDCSlXCm6JugEb7DYE8tVMAQroC+cuQGImAVQBJJgBaULC5NFQAfTFNUQ4sKABzOCiaABsxABMACjkmAviMLlQRMijFOEIAa2tiAA88sHqARkt7Eyraht0ASjx8wrFiiFLyiBF4OhUm1vbdADlJ6zg6doA3KEy4DRaABn7BguGSsqiWdI4s1dmAJnmwAGVL67X8Jk3t3b2JGC4NH5MGBQeoaW4HAYQQpFU7lCj1MizNrvXQAFTgCPaqHSUFUSnSrw0ugAouRVkx4WQ+pDoSdRmdKVEoHQ4FA7g90QimMzWVicXjiATVkSwKSKHQKRiqWBDlChglYVFUFAWCwAO6CLJMWYAZgeAAUVerNXzcXB8YSSWSJcrVRq6FlqUcYfTyiw4OkqojdHMUU8PV72oonGpZbSFa6KmwunV6lEkgwRKh2X7OjVY0wE8Qk0HTKoWGH5SMxlE6FAshxiFFrGUyKQWLqHgAlcuVpg1sh1iAsXMhgs0ouKrJQCizACcDwAIiPzLCnXLjhGS8OKKWoBAUki9lOZ0wyxvZ67570vBBfE2RFDIiFwtB0HFpMnIjFxEwFqQ4CeIGB3ABdIA) to view a Shiny for Python app with a variety of **inputs**!
+
+## UI - Creating Outputs
+
+::: {.incremental}
+* [UI outputs]{style="color:#EE6331"} create a spot on the webpage to put results from the server.
+* All UI outputs require an `id` argument, which corresponds to the server’s output ID.
+:::
+
+## UI - Creating Outputs
+For example, if you create this UI output:
+```{python}
+ui.output_text(id = "my_text")
+```
+
+Then you could connect it to the server output using the code below:
+
+```{python}
+def server(input, output, session):
+    @output
+    @render.text
+    def my_text():
+        return "some text to show"
+```
+
+## UI - Outputs
+Match the UI outputs IDs with the server output IDs.
+
+[Fix this app](https://shinylive.io/py/editor/#code=NobwRAdghgtgpmAXGKAHVA6VBPMAaMAYwHsIAXOcpMAMwCdiYACAZwAsBLCbJjmVYnTJMArhzxM6lACZw6EgILoAOhD4ChTVFAjSoLJvq3TV9RkxhQyqADbEyNjgCNe-QcJy37hg7bKrVNFQAfTEmAF5RDiwoAHM4YJobMWkAClUmTKiMYhFrPOCKAA8ydLBgiuUwAEo8DKyxHLzUAuKyYIA3OScrPjKK4Kra+szG3Pz2signGzh+ypq6iCzs8Zb2r1KqgaGllbHmgrF5wZrVaoDdOBpWOS66VK51iTW8iRY4FhYOUmrEEaYAAFXv5lllAVIrnQMG0AbIbixGAk2qk-gCVlIyCI6Msqmw4DY7BIAO6CGzSACEVUuK2Bh1BtMhsmhsLBmXhrCRhTgJU63VR-zZKyYAGImAAVTgGGgiCCEMg-ZbsXLkyRwLE4wysMh0LixdFZTHYpU61LAACMEgATBIAMwSAAsEgArABdC4QAF0iZeplyGHTWZw66GYJ6KaJOiwOZooUraQ3SKoaQYAAiVigADEo-BUiAqkUqogmBa8Dbba69sLqzXa1VsEWS07nXgAGyugC+HtrRs1CZp4JBvpk-s2wZuUGCLEIVgodGCmwFBsyveWfgw09ncjNlvLlZLLaYNqYFY9XqHQohI+hYnHnPgwTYZBgNiXccN6uN2QAEuKALIADJlAAPJYdAAI4iHAcAAHz4oSxAkmSlLAQA9GBkHQTBQyXEEERMEoqCpEEoTiLcdD3NUYAdng4DQPA1BSJBHBSPA5AsDCJT4EQpAUFQyBigAcvYcBMGQbBWGJUpMDQHCzLwBikDYPAQHAhCfCwUB0A2EBinQspSaJPKwLYolcIZTBOAwxIfHQqgAFJcAAVlAVqqNRrpAA)
+
+```{r}
+#| eval: true
+#| echo: false
+
+library(countdown)
+
+countdown(
+  minutes = 3,
+  # Fanfare when it's over
+  play_sound = TRUE,
+  # Set timer theme to match solarized colors
+  color_border              = "#FFFFFF",
+  color_text                = "#7aa81e",
+  color_running_background  = "#7aa81e",
+  color_running_text        = "#FFFFFF",
+  color_finished_background = "#ffa07a",
+  color_finished_text       = "#FFFFFF",
+  font_size = "2em",
+  bottom = "-10%"
+  )
+```
+
+
+
+## Server Logic
+
+In Shiny, the **server logic** is defined within a function which takes three arguments:
+
+::: {.incremental}
+1. `input`
+2. `output`
+3. `session`
+:::
+
+. . . 
+
+```{python}
+def server(input, output, session):
+    # Server code goes here
+```
+
+## Server Logic
+
+The server function is where you:
+
+::: {.incremental}
+1. Access and use `inputs`
+2. Define `outputs`
+:::
+
+## Server Logic - Access Inputs
+Input values are accessed via `input.x()`, where `x` is the `id` of the input.
+
+. . .
+
+::: {style="text-align: center"}
+![](https://shiny.rstudio.com/py/docs/assets/reactive-flow.svg)
+:::
+
+## Server Logic - Access Inputs
+Comparing Shiny for Python to R
+
+::: {.incremental}
+* **Shiny for Python**: `input.x()`
+* **Shiny for R**: `input$x` 
+:::
+
+## Server Logic - Defining Outputs
+Defining outputs is a three step process:
+
+::: {.incremental}
+1. Create a function with no parameters
+:::
+
+. . . 
+
+```{python}
+#| code-line-numbers: "2"
+def server(input, output, session):
+    def txt():
+```
+
+## Server Logic - Defining Outputs
+Defining outputs is a three step process:
+
+1. Create a function with no parameters
+
+::: {.incremental}
+2. Apply a `@output` and `@render` decorator
+:::
+
+. . . 
+
+```{python}
+#| code-line-numbers: "2-3"
+def server(input, output, session):
+    @output
+    @render.text
+    def txt():
+```
+
+## Server Logic - Defining Outputs
+Defining outputs is a three step process:
+
+1. Create a function with no parameters
+2. Apply a `@output` and `@render` decorator
+
+::: {.incremental}
+3. Add logic
+:::
+
+. . . 
+
+```{python}
+#| code-line-numbers: "5-8"
+def server(input, output, session):
+    @output
+    @render.text
+    def txt():
+        if input.enable():
+            return "Yes!"
+        else:
+            return "No!"
+```
+
+## Putting it together!
+
+[Make this app work!](https://shinylive.io/py/editor/#code=NobwRAdghgtgpmAXGKAHVA6VBPMAaMAYwHsIAXOcpMAMwCdiYACAZwAsBLCbJjmVYnTJMAgujxM6lACZw6EgK4cAOhFVpUAfSVMAvEyVYoAcziaaAGyXSAFKqYODHDF1QKymwmziEA1gCNiAA87ME1wzWV8JiiAUWh-CzgAfiiASjx7R0M2AGZQgEkWXmFKKES4aVSwDKyHQ2J3Nw8KII8ANzl-KDI+UIj0zIg01VVZGlY5TrobV3cJRrJmiRY4FhYOUjTEOqYAAUXm3b2pCFk6DFayXfGmMjabbd3HXgm5sgwyisediBf-xxSMgKOh-KIATTWAEIos9HHALKtfgCAUCQWCwAA5YgwsCjaDoPSidA2DTaDgrKZyNJgAC+eHA0Hg1CkAEclFJ4OQWJc2vgiKQKFRkABiJjYih3Ng9KUcYo0DhJXjFUgWHgQHxrFhQOjYVRiugKP5kbxMOBBWCoJVcKVwJj+BgAd1WdFUACkuAArKAAJlUdIAukA)
+
+[Working app here](https://shinylive.io/py/app/#code=NobwRAdghgtgpmAXGKAHVA6VBPMAaMAYwHsIAXOcpMAMwCdiYACAZwAsBLCbJjmVYnTJMAgujxM6lACZw6EgK4cAOhFVpUAfSVMAvEyVYoAcziaaAGyXSAFKqYODHDF1QKymwmziEA1gCNiAA87MEoofws4ZXwmGIBRaEi4AH4YgEo8e0dDNgBmUIBJFl5hcOTpNLBM7IdDYnc3DwogjwA3OX8oMj5QslaMrIh01VVZGlY5DrobV3cJBrImiRY4FhYOUnTEWqYAAUWm3b2pCFk6DBayXfGmfrIbbd3HXgm5sgxyqMediBf-xxSMgKOh-GIATTWAEIYs9HHALKtfgCAUCQWCwAA5YgwsCjaDoPSidA2DTaDgrKZydJgAC+eHA0Hg1CkAEclFJ4OQWJdWvgiKQKFRkABiJjYih3NjdKUcEo0DhRXglUgWHgQHxrFhQOjYVRiugKP5kbxMOBBWCoJVcKVwJj+BgAd1WdFUACkuAArKAAJlUdIAukA)
+
+```{r}
+#| eval: true
+#| echo: false
+
+library(countdown)
+
+countdown(
+  minutes = 5,
+  # Fanfare when it's over
+  play_sound = TRUE,
+  # Set timer theme to match solarized colors
+  color_border              = "#FFFFFF",
+  color_text                = "#7aa81e",
+  color_running_background  = "#7aa81e",
+  color_running_text        = "#FFFFFF",
+  color_finished_background = "#ffa07a",
+  color_finished_text       = "#FFFFFF",
+  font_size = "2em",
+  bottom = "-10%"
+  )
+```
+
+
+
+## A quick primer on reactivity
+
+::: {style="text-align: center"}
+![](https://shiny.rstudio.com/py/docs/assets/reactive-flow.svg)
+:::
+
+
+::: {style="text-align: center"}
+What if my Shiny app does more than just: 
+$$
+n * 2
+$$
+:::
+
+## A quick primer on reactivity
+
+Create a separate reactive function!
+
+```{python}
+@reactive.Calc
+def double_x():
+    return input.x() * 2
+```
+
+. . . 
+
+<br>
+
+And then use the reactive function in an output:
+
+```{python}
+@output
+@render.text
+def txt():
+    return f"x * 2 is {double_x()}"
+```
+
+
+::: {.incremental}
+* **Shiny for Python**: `reactive.Calc`
+* **Shiny for R**: `shiny::reactive()`
+:::
+
+
+## A quick primer on reactivity
+[Fix this app!](https://shinylive.io/py/editor/#code=NobwRAdghgtgpmAXGKAHVA6VBPMAaMAYwHsIAXOcpMAMwCdiYACAZwAsBLCbJjmVYnTJMAVAB0IEgMRMAqgEkmAWhWqJaVAH0ArhyYBeJrqxQA5nE00ANroAmACglNnRjhi6ptZTSysdbcHSOkGL4TKEAcqF4TAAMMQCMsfFMACyxAJR4Ti7GxF6e3hQAHt4AboEARlBkfMFkpaEZEs2SEDIAyoEVdMqqKhIBNKzdgUz2Hl4x+WSFMSxwLCwcpBmIEjnOAAKau5tMQ0wQmoRQVoT2a-suTHRwZNp0EEy7mvv7WzOFH3cQAXQYEpkfaHBpkS7rZ43Fx3B5PJg0UIgV4AX1CG3aTAAStpnho+gNoOgDEwAILoewaHQceajOgZMAogC6QA)
+
+* Add a `reactive.Calc` that does *something* to the value `n`
+* add the `reactive.Calc` function to the output
+
+```{r}
+#| eval: true
+#| echo: false
+
+library(countdown)
+
+countdown(
+  minutes = 3,
+  # Fanfare when it's over
+  play_sound = TRUE,
+  # Set timer theme to match solarized colors
+  color_border              = "#FFFFFF",
+  color_text                = "#7aa81e",
+  color_running_background  = "#7aa81e",
+  color_running_text        = "#FFFFFF",
+  color_finished_background = "#ffa07a",
+  color_finished_text       = "#FFFFFF",
+  font_size = "2em",
+  bottom = "-10%"
+  )
+```
+
+## A quick primer on reactivity
+Comparing Shiny for Python to R
+
+* **Shiny for R**: `shiny::reactive()`
+* **Shiny for Python**: `reactive.Calc`
+
+. . .
+
+* **Shiny for R**: `shiny::observe()`
+* **Shiny for Python**: `reactive.Effect`
+
+
+More info [here](https://shiny.rstudio.com/py/docs/reactive-programming.html) on Shiny for Python reactivity
+
+## Layout and Style
+
+Common layout for shiny apps - **fluid page** with **sidebar layout**
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{python}
+app_ui = ui.page_fluid(
+    ui.panel_title(),
+    ui.layout_sidebar(
+        ui.panel_sidebar(
+            ...
+        ),
+        ui.panel_main(
+            ...
+        ),
+    ),
+)
+```
+:::
+
+::: {.column width="50%"}
+![](images/page_fluid.jpg)
+:::
+
+::::
+
+## Layout and Style - Page with Sidebar
+
+![](images/page_sidebar.png){fig-align="center"}
+
+Run app [here](https://shinylive.io/py/editor/#code=NobwRAdghgtgpmAXGKAHVA6VBPMAaMAYwHsIAXOcpMAMwCdiYACAZwAsBLCbJjmVYnTJMAgujxM6lACZw6EgK4cAOhD4ChTGFDKoANsTJ6OAIyzZ9hplBZN9ZVesHCIC-jxtMIqVarSoAfSUmAF4mJSwoAHM4AJo9JWkAClUmNPCOSIg4PQCyDiM4FLAAZT4FPR04ay9BbT0maQ4WMjpTBXzSZTAASjxfCHSMjErsYg6Alg5ZEyg6FIhUoeHUKGzcqZm5heX0iK5UCZZjWXnuxfwmbpLYfWqpgC84bokABgkARlfviQAmAFZXn0lrt9t4Jq54G1CMV4GsXlcwABZODwy5A-qDXbDA4QtxyDgw7otaQBWQANwR1zIa2kc2kjTg5I4Og4XUuH2BWNBmVxZEmJzkxQgARMXBYVLAADk3CY5ExiDQmGKIBL0Z8fkxfhiQekubq0hFVusAtouDtsRFxroJpYyMU7d0egamFyhlznYsvbIlSw5OShXyJNbDmQJH6WFNSD1EAMhgABEMdXXxqQQU5YAz2qB6MghboiJicFrEKJ0WBO3U+uxZpI9JgAWgAfAqTAArOCEMix7nLAAeoS8mHL6cYGAgdRzST5GDhEDrEhnJLJTIXvHBZHHdc9LrSNA4UQkUAHYXsGBYChMdpYdd31j7GGL9r7i4349F4rXslVBWwIQAKnQChwJ62KSHAZAKHQgz7lEAx+Ogg5iKgST+EEHDhv6cg9GAAC+AC6QA)
+
+## Layout and Style - Other Page Functions
+
+![](images/page_functions.png)
+
+## Layout and Style - Rows and Columns
+
+:::: {.columns}
+::: {.column width="70%"}
+```{python}
+from shiny import App, ui
+
+style="border: 1px solid #999;"
+
+app_ui = ui.page_fluid(
+    ui.row(
+        ui.column(4, "row-1 col-1", style=style),
+        ui.column(8, "row-1 col-2", style=style),
+    ),
+    ui.row(
+        ui.column(6, "row-2 col-1", style=style),
+        ui.column(6, "row-2 col-2", style=style),
+    ),
+)
+
+app = App(app_ui, None)
+```
+:::
+
+::: {.column width="30%"}
+![](images/row_col.jpg)
+:::
+::::
+
+## Layout and Style - Tabs and Navigation
+
+::: {.incremental}
+* Allows you to create apps with multiple pages
+
+* `ui.navset_xxx`: where `xxx` can be `tab`, `tab_card`, `pill`, `pill_card`, or `pill_list`
+
+* Replace `xxx` in [this app](https://shinylive.io/py/editor/#code=NobwRAdghgtgpmAXGKAHVA6VBPMAaMAYwHsIAXOcpMAMwCdiYACAZwAsBLCbJjmVYnTJMAgujxMArhwA6EOWlQB9aUwC8UjligBzOEpoAbaQBMAFHKZXNGaADcWcMkoAebixGteb9iyhn4TAFkUABGTFBMJOSUZAEAlHiW3lbStlB2fqEBEsFhTOHRFOQJSZ7W8XKV8tDo6qLoZooqHBIAcqRw8WAAvgC6QA) to see tab/navigation choices.
+
+```{r}
+#| eval: true
+#| echo: false
+
+library(countdown)
+
+countdown(
+  minutes = 2,
+  # Fanfare when it's over
+  play_sound = TRUE,
+  # Set timer theme to match solarized colors
+  color_border              = "#FFFFFF",
+  color_text                = "#7aa81e",
+  color_running_background  = "#7aa81e",
+  color_running_text        = "#FFFFFF",
+  color_finished_background = "#ffa07a",
+  color_finished_text       = "#FFFFFF",
+  font_size = "2em",
+  bottom = "-10%"
+  )
+```
+:::
+
+## Layout and Style - Other Navigation Elements
+
+::: {.incremental}
+* **External links**: Create a tab to an external link using `ui.nav_control()`
+
+* **Menus**: Create a dropdown menu on the navbar with `ui.nav_menu()`
+:::
+. . . 
+
+Example app [here](https://shinylive.io/py/editor/#code=NobwRAdghgtgpmAXGKAHVA6VBPMAaMAYwHsIAXOcpMAMwCdiYACAZwAsBLCbJjmVYnTJMAgujxMArhwA6EOWlQB9aUwC8UjligBzOEpoAbaQBMAFHKZXNGaADcWcMkrJQARksJQ65y9evStlB2Figy+Ezhrm5MUEwk5JRk4QCUeH7+Vhn+gfaepGQMhhYQmWU2UKEASgDKZJImHMThEmx0cDRq4WxkZKgsiAD0g3Qs9Y3EGCQwLUyudHpkXWBKboZQEADWqdn+abvWBzZ58BCSJeX+4QDyZGxwdEyGXJssLXJH-gDETG7EJjxiDQmKdJJ8Alp7KE3LMou5fvECklUulSpcsmAAArrLhzOAAD2S+A+aPRP0I7SgFFiTDYgg4AC8ClBDE8uHBwRiALQ8rnveSky7hACygjgeMJ-PK+zRKTkcoFinUonQZkUKg4EgAcqQ4CkwABfAC6QA)
+
+## Wrap Up
+
+We only just scratched the surface 😬!
+
+. . .
+
+<br>
+
+...but you can learn more [here](https://shiny.rstudio.com/py/)!
+
+## Final Project
+
+::: {.columns}
+
+::: {.column}
+Recreate [this application](https://shinylive.io/py/app/#code=NobwRAdghgtgpmAXGKAHVA6VBPMAaMAYwHsIAXOcpMAMwCdiYACAZwAsBLCbJjmVYnTJMAVAB0IfAUKYQArvx5QWs1BKmDhMKGVQAbYmT0cARlmz7DTZU31kJEgMRMAqgEkmAWm8-ff-74SaKgA+nIcTAC8TOFYUADmcCE0euEAJgAUEkw5MRxxEHB6IWQcRnBZYACCTABKUBBpjEwAIhwsZHSmcqWkYmAAlHjZubF6UNjEPSEsHGlwJlB0WRC5a3kFRTNzC0sr6wcbXKjT8vBdhJVpOlDbAF5w-XhM-S03TADKsPpwnxwPTAyAEYAAyeUEgkEDRBPF6rQ4IxFrABuUFSv2iEOeMC4USYoOxUAAHniIVDhvCkbFjtMWMZ5st+iYuCEziY4HRYf0AHIKdl0JjEGhMABCXBYMPw+OeAFYQc8AMzkkZU-I0sghOhQNIcYghEw9MikFiVRZ0EIkAycqX9EVLJgAYWIVslzxA-TocDS-UQLzAtS9XLAJnRPr9ItDYAAvgMVeshnG1rFUA0ttouPskRsprpppYyJV8-1Y5T4xS1gmICWnJ8OciOV4Ak3-BJ5sKWHWORl1c8cycyM8OyxZqRoXGAAJ9noTz2NDlYAwFktrNu2RcZMeltZ2DCcDoZEnRCCYLWNRgYU9pCDd489DDXMi3WYPDdDOFZg7MiAqaLqjBf1k+S7N9Ew-S1BDxP8zQtZ1BA3Z5QKzeZvzKHhogAFToOQ4GrCBnCqdAmAAeRMAArOBCGEZtqKCQjogI1AMmCMIOEHTs6AGaMAF0gA).
+
+Three starting points:
+
+1. [Little help](https://shinylive.io/py/editor/#code=NobwRAdghgtgpmAXGKAHVA6VBPMAaMAYwHsIAXOcpMAMwCdiYACAZwAsBLCbJjmVYnTJMAVAB0IfAUKYQArvx5QWs1BKmDhMKGVQAbYmT0cARlmz7DTZU31kJEgMRMAqgEkmAWm8-ff-74SaKgA+nIcTAC8TOFYUADmcCE0euEAJgAUAJQOEM4AynB0AG5FXgEV-hJpcDSsRaV0GVyocmR4TMRtre31LCwcpFmIEkxjTAACIdOj41MzEONMNXWWZNkji0vjdhicLOsAHlGqGHRQEGmMZxdpENkds9vPSyZcKtHTIY9bL38kBjoJy+Pz+YJqEAGZB40QAKnQ5HAchAnEwAILoJgAeRMACs4IRhJViUFMdEMagMsEwhwOiwGkUsmAAL4AXSAA)
+2. [Some help](https://shinylive.io/py/editor/#code=NobwRAdghgtgpmAXGKAHVA6VBPMAaMAYwHsIAXOcpMAMwCdiYACAZwAsBLCbJjmVYnTJMAVAB0IfAUKYQArvx5QWs1BKmDhMKGVQAbYmT0cARlmz7DTZU31kJEgMRMAqgEkmAWm8-ff-74SaKgA+nIcTAC8TOFYUADmcCE0euEAJgAUEkw5MRxxEHB6IWQcRnBZYCHVYmAAlHjZubF6UNjEcmQhLBxpcCZQdFkQuaN5BUXdvf2Dw2Pz41yonSHy8HQchBnVIQ1NC835Syssxn1DO3sjB4cYx110UGkcxCEmnWSkLNvVdftjVwOsVQUEKxW0XDmNxysQ6uhWljIlR2tT+13mgNyVzRTiYAGU4HQAG6ErwBcn+CR9GisQkkob3PBMOHLMhMlhwFg9Uh1RD-AACKPRTEFNWF1NsBiRvP+ozsGE4LCRAA8oqoMI8IGlGBrQWkIBkGkxZdCciYuCpojsmSbTSQDHQ1dbjcLTTk+hAemQeNEACp0ORwHEQZwAQXQTAA8iYAFZwQjCClJoIR6Lh1AZYJhDjsumEupgAC+AF0gA)
+3. [More help](https://shinylive.io/py/editor/#code=NobwRAdghgtgpmAXGKAHVA6VBPMAaMAYwHsIAXOcpMAMwCdiYACAZwAsBLCbJjmVYnTJMAVAB0IfAUKYQArvx5QWs1BKmDhMKGVQAbYmT0cARlmz7DTZU31kJEgMRMAqgEkmAWm8-ff-74SaKgA+nIcTAC8TOFYUADmcCE0euEAJgAUEkw5MRxxEHB6IWQcRnBZYCHVYmAAlHjZubF6UNjEcmQhLBxpcCZQdFkQuaN5BUXdvf2Dw2Pz41yonSHy8HQchJXVIbV4TLUAIjpQTADKsPpw5xwAXtcZAIwADJ4vz891iHsHIwv-ANGADcoKlrtEdvsYFwokxIUxtAAPWE7BpNQGxJYrFjGPpDWo7H61AByChMcDoTGINCYACEuCxvvgmI99gBWZ77ADMn0afwx+SxXToUDSHGIIRMnTIpBY2xqzNqtMGTAAwsQDHQmfsQLU6HA0rVEAcwAAlA1EsAmMFGk20m1gAC+dXRYzR-LGsVQUEKxW0XDmgPGHV0K0sZHlu3qrtG7tjfJdECc5wpQIpXgCmf8Ej6NJYqYpGSF+xDyzI+3zLB6pC+roAAqXOvX9RA8RgdhlE6Nc7YDBHax7RnYMJwWBHkdEIJgRa3GBgZ2kIEWp5129VOw1fkH5iYGbChWuQp39jHtyRNfuV2RD8et9vu5QemQeNEACp0ORwRPJgCC6CYADyJgAFZwIQwhZpBQT-tEf6oBkwRhBwFYFnQdROgAukAA)
+:::
+
+::: {.column}
+![](images/final_project.png)
+:::
+::::
+
+```{r}
+#| eval: true
+#| echo: false
+
+library(countdown)
+
+countdown(
+  minutes = 10,
+  # Fanfare when it's over
+  play_sound = TRUE,
+  # Set timer theme to match solarized colors
+  color_border              = "#FFFFFF",
+  color_text                = "#7aa81e",
+  color_running_background  = "#7aa81e",
+  color_running_text        = "#FFFFFF",
+  color_finished_background = "#ffa07a",
+  color_finished_text       = "#FFFFFF",
+  font_size = "2em",
+  bottom = "-10%"
+  )
+```
+
+## Sharing your Shiny for Python Apps
+
+::: {.incremental}
+* **Shinylive**: for simple applications with minimal [package dependencies](https://shiny.rstudio.com/py/docs/shinylive.html#installed-packages)
+
+* **[shinyapps.io](https://www.shinyapps.io/)**: hosted service for deploying shiny for python apps
+
+* **Posit Connect**: Requires v2022.07+
+:::
+
+## Deploying to Posit Connect
+
+::: {.incremental}
+1. Install `rsconnect-python` package
+2. Register you Connect server/account
+3. Create a `requirements.txt` file
+4. Deploy!
+:::
+
+. . . 
+
+
+```{bash}
+rsconnect deploy shiny . app.py
+```
